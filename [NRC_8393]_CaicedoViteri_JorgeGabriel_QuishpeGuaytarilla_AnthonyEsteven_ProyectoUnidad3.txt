@@ -1,0 +1,495 @@
+-- CREACION OBJETOS DE LA BASE DE DATOS
+-- Tabla Persona
+
+Create TABLE tb_persona(
+	int_index_persona NUMBER NOT NULL PRIMARY KEY,
+	str_id_persona VARCHAR2(50) NOT NULL,
+	str_nombre_persona VARCHAR2(50) NOT NULL,
+	str_apellido_persona VARCHAR2(50) NOT NULL,
+	str_fecha_nacimiento_persona VARCHAR2(50) NOT NULL,
+	int_edad_persona NUMBER
+);
+
+--  Tabla Estudiante
+
+Create TABLE tb_estudiante
+(
+	int_index_persona NUMBER NOT NULL PRIMARY KEY,
+	str_foto_estudiante VARCHAR2(500) NOT NULL,
+	CONSTRAINT fk_persona_estudiante
+	FOREIGN KEY (int_index_persona) 
+	REFERENCES tb_persona(int_index_persona)
+);
+
+-- Tabla Docente
+
+Create TABLE tb_docente
+(
+	int_index_persona NUMBER NOT NULL PRIMARY KEY,
+	str_titulo_docente VARCHAR2 (50) NOT NULL,
+	CONSTRAINT fk_persona_docente
+	FOREIGN KEY (int_index_persona) 
+	REFERENCES tb_persona(int_index_persona)
+);
+
+-- Tabla Representante
+
+Create TABLE tb_representante_estudiante
+(
+	int_index_persona_estudiante NUMBER NOT NULL,
+	int_index_persona_representante NUMBER NOT NULL,
+	str_parentesco VARCHAR2 (50) NOT NULL,
+	FOREIGN KEY (int_index_persona_estudiante) REFERENCES tb_estudiante(int_index_persona),
+	FOREIGN KEY (int_index_persona_representante) REFERENCES tb_persona(int_index_persona),
+	PRIMARY KEY (int_index_persona_estudiante,int_index_persona_representante)
+);
+
+-- Tabla usuario
+
+Create TABLE tb_usuario
+(
+	str_id_usuario VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_usuario VARCHAR2 (100)NOT NULL,
+	str_password_usuario VARCHAR2 (100)NOT NULL,
+	int_index_persona NUMBER NOT NULL,
+	CONSTRAINT fk_usuario_persona
+	FOREIGN KEY (int_index_persona) 
+	REFERENCES tb_persona(int_index_persona)
+);
+
+-- Tabla rol
+
+Create TABLE tb_rol
+(
+	str_id_rol VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_descripcion_rol VARCHAR2 (200) NOT NULL
+);
+
+-- Tabla usuario
+
+Create TABLE tb_rol_usuario
+(
+	str_id_usuario VARCHAR2 (100) NOT NULL,
+	str_id_rol VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_usuario_rol
+	FOREIGN KEY (str_id_usuario) 
+	REFERENCES tb_usuario(str_id_usuario),
+	CONSTRAINT fk_rol_usuario
+	FOREIGN KEY (str_id_rol) 
+	REFERENCES tb_rol(str_id_rol),
+	PRIMARY KEY (str_id_usuario,str_id_rol)
+);
+
+-- Tabla anio
+
+Create TABLE tb_anio_escolar
+(
+	str_id_anio VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_anio VARCHAR2 (100) NOT NULL,
+	str_estado_anio VARCHAR2 (100) NOT NULL
+);
+
+-- Tabla nivel
+
+Create TABLE tb_nivel
+(
+	str_id_nivel VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_nivel VARCHAR2 (100) NOT NULL
+);
+
+-- Tabla matricula
+
+Create TABLE tb_matricula
+(
+	int_index_persona NUMBER NOT NULL,
+	str_id_anio VARCHAR2 (100) NOT NULL,
+	str_id_nivel VARCHAR2 (100) NOT NULL,
+	str_estado VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_estudiante_matricula
+	FOREIGN KEY (int_index_persona) 
+	REFERENCES tb_estudiante(int_index_persona),
+	CONSTRAINT fk_anio_matricula
+	FOREIGN KEY (str_id_anio) 
+	REFERENCES tb_anio_escolar(str_id_anio),
+	CONSTRAINT fk_nivel_matricula
+	FOREIGN KEY (str_id_nivel) 
+	REFERENCES tb_nivel(str_id_nivel),
+	PRIMARY KEY (int_index_persona,str_id_anio)
+);
+
+-- Tabla materia
+
+Create TABLE tb_materia
+(
+	str_id_materia VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_materia VARCHAR2 (100) NOT NULL,
+	str_descripcion_materia VARCHAR2 (500) NOT NULL,
+	str_id_nivel VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_nivel_materia
+	FOREIGN KEY (str_id_nivel) 
+	REFERENCES tb_nivel(str_id_nivel)
+);
+
+-- Tabla actividad
+
+Create TABLE tb_actividad
+(
+	str_id_actividad VARCHAR2 (100) NOT NULL,
+	var_tema_actividad VARCHAR2 (200) NOT NULL,
+	str_estado_actividad VARCHAR2 (100) NOT NULL,
+	str_id_materia VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_materia_actividad
+	FOREIGN KEY (str_id_materia) 
+	REFERENCES tb_materia(str_id_materia),
+	PRIMARY KEY (str_id_actividad,str_id_materia)
+);
+
+-- Tabla libreta
+
+Create TABLE tb_libreta
+(
+	str_id_libreta VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_libreta VARCHAR2 (500) NOT NULL,
+	str_estado_libreta VARCHAR2 (100) NOT NULL
+);
+
+-- Tabla calificaciones
+
+Create TABLE tb_calificaciones
+(
+	str_id_materia VARCHAR2 (100) NOT NULL,
+	str_id_actividad VARCHAR2 (100) NOT NULL,
+	str_id_libreta VARCHAR2 (100) NOT NULL,
+	float_nota NUMBER NOT NULL,
+	CONSTRAINT fk_actividad_calificaciones
+	FOREIGN KEY (str_id_materia,str_id_actividad) 
+	REFERENCES tb_actividad(str_id_materia,str_id_actividad),
+	CONSTRAINT fk_libreta_calificaciones
+	FOREIGN KEY (str_id_libreta) 
+	REFERENCES tb_libreta(str_id_libreta),
+	PRIMARY KEY (str_id_materia,str_id_actividad,str_id_libreta)
+);
+
+-- Tabla base legal
+
+Create TABLE tb_base_legal
+(
+	str_id_base VARCHAR2 (100) NOT NULL PRIMARY KEY,
+	str_nombre_base VARCHAR2 (100) NOT NULL,
+	str_estado_base VARCHAR2 (100) NOT NULL
+);
+
+-- Tabla institucion
+
+Create TABLE tb_institucion
+(
+	str_id_institucion VARCHAR2 (100) PRIMARY KEY,
+	str_nombre_institucion VARCHAR2 (100) NOT NULL,
+	str_modalidad_institucion VARCHAR2 (100) NOT NULL,
+	str_jornada_institucion VARCHAR2 (100) NOT NULL,
+	str_id_base VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_base_institucion
+	FOREIGN KEY (str_id_base)
+	REFERENCES tb_base_legal(str_id_base)
+);
+
+-- Tabla aula
+
+Create TABLE tb_aula
+(
+	str_id_aula VARCHAR2 (100) NOT NULL,
+	str_nombre_aula VARCHAR2 (100) NOT NULL,
+	str_id_institucion VARCHAR2 (100) NOT NULL,
+	CONSTRAINT fk_institucion_aula
+	FOREIGN KEY (str_id_institucion)
+	REFERENCES tb_institucion(str_id_institucion),
+	PRIMARY KEY (str_id_aula,str_id_institucion)
+);
+
+-- Tabla ubicacion
+
+Create TABLE tb_ubicacion
+(
+	int_index_persona NUMBER NOT NULL,
+	str_id_institucion VARCHAR2 (100) NOT NULL,
+	str_id_aula VARCHAR2 (100) NOT NULL,
+	str_id_materia VARCHAR2 (100) NOT NULL,
+	str_horario VARCHAR2 (200) NOT NULL,
+	CONSTRAINT fk_aula_ubicacion
+	FOREIGN KEY (str_id_institucion,str_id_aula)
+	REFERENCES tb_aula(str_id_institucion,str_id_aula),
+	CONSTRAINT fk_docente_ubicacion
+	FOREIGN KEY (int_index_persona)
+	REFERENCES tb_docente(int_index_persona),
+	CONSTRAINT fk_materia_ubicacion
+	FOREIGN KEY (str_id_materia)
+	REFERENCES tb_materia(str_id_materia),
+	PRIMARY KEY (str_id_institucion,str_id_aula,str_id_materia,int_index_persona)
+);
+
+-- CREACION DE PROCEDIMIENTOS Y FUNCIONES
+-- Procedimiento Estudiante Nuevo
+
+create or replace PROCEDURE SP_CrearEstudiante (int_index IN NUMBER,str_id in VARCHAR2,str_nombre in VARCHAR2,str_apellido in VARCHAR2,str_fecha in VARCHAR2,int_edad in NUMBER,str_foto in VARCHAR2)
+AS
+BEGIN
+	INSERT INTO tb_persona(int_index_persona,str_id_persona,str_nombre_persona,str_apellido_persona,str_fecha_nacimiento_persona,int_edad_persona) VALUES (int_index,str_id,str_nombre,str_apellido,str_fecha,int_edad);
+	INSERT INTO tb_estudiante(int_index_persona,str_foto_estudiante) VALUES (int_index,str_foto);
+END; 
+/
+
+-- Procedimiento Docente Nuevo
+
+create or replace PROCEDURE SP_CrearDocente (int_index IN NUMBER,str_id in VARCHAR2,str_nombre in VARCHAR2,str_apellido in VARCHAR2,str_fecha in VARCHAR2,int_edad in NUMBER,str_titulo in VARCHAR2)
+AS
+BEGIN
+	INSERT INTO tb_persona(int_index_persona,str_id_persona,str_nombre_persona,str_apellido_persona,str_fecha_nacimiento_persona,int_edad_persona) VALUES (int_index,str_id,str_nombre,str_apellido,str_fecha,int_edad);
+	INSERT INTO tb_docente(int_index_persona,str_titulo_docente) VALUES (int_index,str_titulo);
+END; 
+/
+
+-- Nueva Matricula
+
+create or replace PROCEDURE SP_NuevaMatricula (int_index IN NUMBER,str_idanio in VARCHAR2,str_idnivel in VARCHAR2)
+AS
+BEGIN
+	INSERT INTO tb_matricula(int_index_persona,str_id_anio,str_id_nivel,str_estado) VALUES (int_index,str_idanio,str_idnivel,'Activo');
+END; 
+/
+
+--Calificaciones
+
+create or replace FUNCTION FN_Promedio (str_materia IN VARCHAR2)
+RETURN NUMBER
+IS
+  nota NUMBER(30,2);
+  CURSOR cur_nota IS
+	SELECT AVG(tb_calificaciones.float_nota) Promedio
+	FROM tb_libreta
+	INNER JOIN tb_calificaciones ON tb_calificaciones.str_id_libreta=tb_libreta.str_id_libreta
+	INNER JOIN tb_actividad ON tb_calificaciones.str_id_actividad=tb_actividad.str_id_actividad
+	INNER JOIN tb_materia ON tb_materia.str_id_materia=tb_actividad.str_id_materia
+	WHERE tb_calificaciones.str_id_materia LIKE str_materia
+	GROUP BY tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia;
+
+BEGIN
+  OPEN cur_nota;
+  FETCH cur_nota INTO nota;
+  CLOSE cur_nota;
+  RETURN nota;
+END;
+/
+
+-- VISTAS
+-- LISTAR TODOS LOS ESTUDIANTES MATRICULADOS CURSANDO EL PRIMER O SEGUNDO NIVEL INICIAL JUNTO A LA RESPECTIVA FOTO DEL ESTUDIANTE DENTRO EL SISTEMA.
+
+CREATE OR REPLACE VIEW VW_MATRICULAS
+AS
+select int_index_persona,
+str_nombre_persona,
+str_apellido_persona,
+str_foto_estudiante,
+str_estado
+from tb_persona 
+JOIN tb_estudiante USING (int_index_persona) 
+JOIN tb_matricula USING (int_index_persona) 
+WHERE str_estado = 'Activo' AND (str_id_nivel='Niv001' OR str_id_nivel='Niv002');
+
+-- LISTAR TODOS LOS REGISTROS DE ESTUDIANTES REPROBADOS POR MATERIA JUNTO A SU NOTA FINAL.
+
+CREATE OR REPLACE VIEW VW_LIBRETAS
+AS
+SELECT tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia, AVG(tb_calificaciones.float_nota) Promedio
+FROM tb_libreta
+INNER JOIN tb_calificaciones ON tb_calificaciones.str_id_libreta=tb_libreta.str_id_libreta
+INNER JOIN tb_actividad ON tb_calificaciones.str_id_actividad=tb_actividad.str_id_actividad
+INNER JOIN tb_materia ON tb_materia.str_id_materia=tb_actividad.str_id_materia
+HAVING AVG(tb_calificaciones.float_nota) < 14
+GROUP BY tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia;
+
+-- LISTAR TODOS LOS REPRESENTANTES ACTIVOS DEL PRESENTE PERIODO ACADEMICO, JUNTO AL
+-- ESTUDIANTE REPRESENTADO.
+
+CREATE OR REPLACE VIEW VW_REPRESENTANTES
+AS
+select tb_persona.int_index_persona,
+tb_persona.str_nombre_persona,
+tb_persona.str_apellido_persona,
+tb_docente.str_titulo_docente
+from tb_persona
+INNER JOIN tb_representante_estudiante ON tb_persona.int_index_persona=tb_representante_estudiante.int_index_persona_representante
+LEFT JOIN tb_docente ON tb_representante_estudiante.int_index_persona_representante=tb_docente.int_index_persona;
+
+-- LISTAR EL TOTAL DE ESTUDIANTES POR NIVEL DEL PRESENTE PERIODO ACADEMICO 
+-- QUE SE ENCUENTREN ACTIVOS.
+
+CREATE OR REPLACE VIEW VW_ESTUDIANTES
+AS
+SELECT tb_anio_escolar.str_nombre_anio,tb_nivel.str_nombre_nivel, COUNT(tb_matricula.int_index_persona) Total
+FROM tb_matricula
+INNER JOIN tb_nivel ON tb_nivel.str_id_nivel=tb_matricula.str_id_nivel
+INNER JOIN tb_anio_escolar ON tb_anio_escolar.str_id_anio=tb_matricula.str_id_anio
+WHERE tb_matricula.str_id_anio LIKE 'Anio0001'
+GROUP BY tb_anio_escolar.str_nombre_anio,tb_nivel.str_nombre_nivel;
+
+-- TRIGGER AUDITORIA.
+
+Create table tb_auditoria (
+	int_id NUMBER(30,2) GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1) PRIMARY KEY,
+	str_nombreusuario VARCHAR2(100),
+	str_tabla VARCHAR2(100),
+	dt_fechaingre DATE,
+	str_operacion VARCHAR(80)
+);
+
+Create or replace trigger tg_estudiantes_auditoria
+Before Insert or Delete or Update on tb_estudiante
+FOR EACH ROW
+ENABLE
+DECLARE
+	str_nombreusuario VARCHAR2(100);
+	dt_fechaingre DATE;
+BEGIN
+	SELECT user,sysdate INTO str_nombreusuario,dt_fechaingre FROM DUAL;
+	IF INSERTING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Estudiante',dt_fechaingre,'Insercion');
+	ELSIF DELETING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Estudiante',dt_fechaingre,'Eliminacion');
+	ELSIF UPDATING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values(str_nombreusuario,'Estudiante',dt_fechaingre,'Actualizacion');
+	END IF;
+END;
+/
+
+Create or replace trigger tg_docente_auditoria
+Before Insert or Delete or Update on tb_docente
+FOR EACH ROW
+ENABLE
+DECLARE
+	str_nombreusuario VARCHAR2(100);
+	dt_fechaingre DATE;
+BEGIN
+	SELECT user,sysdate INTO str_nombreusuario,dt_fechaingre FROM DUAL;
+	IF INSERTING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Docente',dt_fechaingre,'Insercion');
+	ELSIF DELETING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Docente',dt_fechaingre,'Eliminacion');
+	ELSIF UPDATING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values(str_nombreusuario,'Docente',dt_fechaingre,'Actualizacion');
+	END IF;
+END;
+/
+
+Create or replace trigger tg_matriculas_auditoria
+Before Insert or Delete or Update on tb_matricula
+FOR EACH ROW
+ENABLE
+DECLARE
+	str_nombreusuario VARCHAR2(100);
+	dt_fechaingre DATE;
+BEGIN
+	SELECT user,sysdate INTO str_nombreusuario,dt_fechaingre FROM DUAL;
+	IF INSERTING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Matricula',dt_fechaingre,'Insercion');
+	ELSIF DELETING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Matricula',dt_fechaingre,'Eliminacion');
+	ELSIF UPDATING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values(str_nombreusuario,'Matricula',dt_fechaingre,'Actualizacion');
+	END IF;
+END;
+/
+
+Create or replace trigger tg_usuarios_auditoria
+Before Insert or Delete or Update on tb_usuario
+FOR EACH ROW
+ENABLE
+DECLARE
+	str_nombreusuario VARCHAR2(100);
+	dt_fechaingre DATE;
+BEGIN
+	SELECT user,sysdate INTO str_nombreusuario,dt_fechaingre FROM DUAL;
+	IF INSERTING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Usuario',dt_fechaingre,'Insercion');
+	ELSIF DELETING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Usuario',dt_fechaingre,'Eliminacion');
+	ELSIF UPDATING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values(str_nombreusuario,'Usuario',dt_fechaingre,'Actualizacion');
+	END IF;
+END;
+/
+
+Create or replace trigger tg_calificaciones_auditoria
+Before Insert or Delete or Update on tb_calificaciones
+FOR EACH ROW
+ENABLE
+DECLARE
+	str_nombreusuario VARCHAR2(100);
+	dt_fechaingre DATE;
+BEGIN
+	SELECT user,sysdate INTO str_nombreusuario,dt_fechaingre FROM DUAL;
+	IF INSERTING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Calificaciones',dt_fechaingre,'Insercion');
+	ELSIF DELETING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values (str_nombreusuario,'Calificaciones',dt_fechaingre,'Eliminacion');
+	ELSIF UPDATING THEN
+		INSERT INTO tb_auditoria(str_nombreusuario,str_tabla,dt_fechaingre,str_operacion) values(str_nombreusuario,'Calificaciones',dt_fechaingre,'Actualizacion');
+	END IF;
+END;
+/
+
+-- PLANEACION
+
+Explain plan for
+select int_index_persona,
+str_nombre_persona,
+str_apellido_persona,
+str_foto_estudiante,
+str_estado
+from tb_persona 
+JOIN tb_estudiante USING (int_index_persona) 
+JOIN tb_matricula USING (int_index_persona) 
+WHERE str_estado = 'Activo' AND (str_id_nivel='Niv001' OR str_id_nivel='Niv002');
+
+Select * From Table(DBMS_XPLAN.Display);
+
+Explain plan for
+SELECT tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia, AVG(tb_calificaciones.float_nota) Promedio
+FROM tb_libreta
+INNER JOIN tb_calificaciones ON tb_calificaciones.str_id_libreta=tb_libreta.str_id_libreta
+INNER JOIN tb_actividad ON tb_calificaciones.str_id_actividad=tb_actividad.str_id_actividad
+INNER JOIN tb_materia ON tb_materia.str_id_materia=tb_actividad.str_id_materia
+GROUP BY tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia;
+
+Select * From Table(DBMS_XPLAN.Display);
+
+Explain plan for
+SELECT tb_anio_escolar.str_nombre_anio,tb_nivel.str_nombre_nivel, COUNT(tb_matricula.int_index_persona) Total
+FROM tb_matricula
+INNER JOIN tb_nivel ON tb_nivel.str_id_nivel=tb_matricula.str_id_nivel
+INNER JOIN tb_anio_escolar ON tb_anio_escolar.str_id_anio=tb_matricula.str_id_anio
+WHERE tb_matricula.str_id_anio LIKE 'Anio0001'
+GROUP BY tb_anio_escolar.str_nombre_anio,tb_nivel.str_nombre_nivel;
+
+
+Select * From Table(DBMS_XPLAN.Display);
+
+Explain plan for
+select tb_persona.int_index_persona,
+tb_persona.str_nombre_persona,
+tb_persona.str_apellido_persona,
+tb_docente.str_titulo_docente
+from tb_persona
+INNER JOIN tb_representante_estudiante ON tb_persona.int_index_persona=tb_representante_estudiante.int_index_persona_representante
+LEFT JOIN tb_docente ON tb_representante_estudiante.int_index_persona_representante=tb_docente.int_index_persona;
+
+Select * From Table(DBMS_XPLAN.Display);
+
+Explain plan for
+	SELECT AVG(tb_calificaciones.float_nota) Promedio
+	FROM tb_libreta
+	INNER JOIN tb_calificaciones ON tb_calificaciones.str_id_libreta=tb_libreta.str_id_libreta
+	INNER JOIN tb_actividad ON tb_calificaciones.str_id_actividad=tb_actividad.str_id_actividad
+	INNER JOIN tb_materia ON tb_materia.str_id_materia=tb_actividad.str_id_materia
+	WHERE tb_calificaciones.str_id_materia LIKE 'MAT001'
+	GROUP BY tb_libreta.str_id_libreta,tb_libreta.str_nombre_libreta,tb_materia.str_nombre_materia;
+Select * From Table(DBMS_XPLAN.Display);

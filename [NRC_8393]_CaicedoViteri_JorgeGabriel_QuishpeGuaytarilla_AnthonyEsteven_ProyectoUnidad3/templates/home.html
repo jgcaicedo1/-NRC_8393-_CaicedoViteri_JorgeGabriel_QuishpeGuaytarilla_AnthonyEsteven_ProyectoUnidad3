@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+    <title>Inicio</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
+
+</head>
+
+<body>
+        <li>
+          <a href="{{url_for('query')}}" class="nav-link text-white" rel="noopener">Agregar Usuarios</a>
+        </li>
+
+        <main class="contenidosistema" style="padding-left:2%">
+            <div class="titulosistema">
+              <div class="row">
+                <div class="col-md-12">
+                  <div class="tile">
+                    {% block query %}
+                    {% endblock %}
+                  </div>
+                </div>
+              </div>
+            </div>
+        </div>
+        </main>
+</body>
+
+</html>
